@@ -7,24 +7,26 @@ import java.lang.ref.WeakReference;
 
 public class BaseBinding implements Binding {
 
-    private View view;
+    private WeakReference<View> rootViewRef;
     private SparseArrayCompat<WeakReference<View>> array;
 
     public void attachView(final View view) {
-        this.view = view;
+        this.rootViewRef = new WeakReference<>(view);
         this.array = new SparseArrayCompat<>();
     }
 
     @Override
     public final View getView() {
-        return view;
+        return rootViewRef.get();
     }
 
     public final <V extends View> V get(final int viewId) {
-        final WeakReference<View> ref = array.get(viewId);
-        View foundView = ref == null ? null : ref.get();
+        final WeakReference<View> viewRef = array.get(viewId);
+        View foundView = viewRef == null ? null : viewRef.get();
         if (foundView == null) {
-            foundView = view.findViewById(viewId);
+            View rootView = rootViewRef.get();
+            foundView = rootView == null ? null
+                    : rootView.findViewById(viewId);
             if (foundView != null) {
                 array.put(viewId, new WeakReference<>(foundView));
             }
