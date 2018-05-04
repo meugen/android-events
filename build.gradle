@@ -15,6 +15,36 @@ buildscript {
     }
 }
 
+ext {
+    def versions = [:]
+    versions.support = '27.1.1'
+    versions.dagger = '2.15'
+
+    def packages = [:]
+    packages.support = 'com.android.support'
+    packages.dagger = 'com.google.dagger'
+
+    def support = [:]
+    support.appcompat = "${packages.support}:appcompat-v7:${versions.support}"
+    support.constraint = "${packages.support}.constraint:constraint-layout:1.1.0"
+    support.recycler = "${packages.support}:recyclerview-v7:${versions.support}"
+
+    def dagger = [:]
+    dagger.core = "${packages.dagger}:dagger:${versions.dagger}"
+    dagger.compiler = "${packages.dagger}:dagger-compiler:${versions.dagger}"
+    dagger.android = [:]
+    dagger.android.core = "${packages.dagger}:dagger-android-support:${versions.dagger}"
+    dagger.android.processor = "${packages.dagger}:dagger-android-processor:${versions.dagger}"
+
+    def others = [:]
+    others.timber = "com.jakewharton.timber:timber:4.7.0"
+
+    deps = [
+            "support": support,
+            "dagger": dagger,
+            "others": others]
+}
+
 allprojects {
     repositories {
         google()
