@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
+<TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="?attr/listPreferredItemHeight"
-        android:textAppearance="?attr/textAppearanceListItem"
-        android:gravity="center_vertical"
-        android:padding="@dimen/default_padding"
-        tools:text="message"
-        android:id="@+id/message"/>
-</layout>
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/listPreferredItemHeight"
+    android:textAppearance="?attr/textAppearanceListItem"
+    android:gravity="center_vertical"
+    android:padding="@dimen/default_padding"
+    tools:text="message"
+    android:id="@+id/message"/>
