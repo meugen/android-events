@@ -7,11 +7,9 @@ import android.events.meugeninua.androidevents.app.managers.events.AppEventsMana
 import android.events.meugeninua.androidevents.app.managers.events.SimpleEvent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.math.BigInteger;
 import java.util.Random;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 

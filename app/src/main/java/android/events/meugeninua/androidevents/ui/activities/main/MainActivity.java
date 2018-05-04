@@ -15,6 +15,8 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class MainActivity extends BaseActivity {
 
     @Inject AppEventsManager eventsManager;
@@ -43,6 +45,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void onSimpleEvent(final SimpleEvent event) {
+        Timber.d(Thread.currentThread().getName());
         adapter.addMessage(event.message);
     }
 }

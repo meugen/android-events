@@ -4,7 +4,6 @@ import android.events.meugeninua.androidevents.app.di.scopes.PerApplication;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.AnyThread;
-import android.support.annotation.MainThread;
 import android.support.v4.util.ArrayMap;
 
 import java.lang.ref.WeakReference;
@@ -13,8 +12,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -28,7 +25,7 @@ import timber.log.Timber;
 public class AppEventsManager {
 
     private final Map<UUID, ObserverWrapper<?>> observers;
-    private final Handler handler;
+    final Handler handler;
 
     @Inject
     AppEventsManager() {
@@ -38,50 +35,40 @@ public class AppEventsManager {
 
     @AnyThread
     public void post(final Object event) {
-        handler.post(() -> postInMainThread(event));
-    }
+        Timber.d(Thread.currentThread().getName());
 
-    private void checkMainThread() {
-        if (Looper.getMainLooper() != Looper.myLooper()) {
-            throw new IllegalStateException("Wrong thread. Should be main (UI) thread only.");
+        final List<ObserverWrapper<?>> wrappers;
+        synchronized (this) {
+            wrappers = new ArrayList<>(observers.values());
         }
-    }
-
-    @MainThread
-    private void postInMainThread(final Object event) {
-        checkMainThread();
-
-        final List<ObserverWrapper<?>> wrappers
-                = new ArrayList<>(observers.values());
         for (ObserverWrapper<?> wrapper : wrappers) {
             wrapper.update(this, event);
         }
     }
 
-    @MainThread
+    @AnyThread
     public <T> UUID subscribeToEvent(
             final Class<T> clazz,
             final TypedObserver<T> observer) {
-        checkMainThread();
-
         UUID key = null;
-        while (key == null || observers.containsKey(key)) {
-            key = UUID.randomUUID();
+        synchronized (this) {
+            while (key == null || observers.containsKey(key)) {
+                key = UUID.randomUUID();
+            }
+            final ObserverWrapper<T> impl = new ObserverWrapper<>(
+                    clazz, observer, key);
+            observers.put(key, impl);
         }
-        final ObserverWrapper<T> impl = new ObserverWrapper<>(
-                clazz, observer, key);
-        observers.put(key, impl);
         return key;
     }
 
-    @MainThread
+    @AnyThread
     public void unsubscribe(final UUID... keys) {
         unsubscribe(Arrays.asList(keys));
     }
 
-    @MainThread
-    public void unsubscribe(final Collection<UUID> keys) {
-        checkMainThread();
+    @AnyThread
+    public synchronized void unsubscribe(final Collection<UUID> keys) {
         for (UUID key : keys) {
             Timber.d("Unsubscribed %s", key);
             observers.remove(key);
@@ -104,7 +91,7 @@ public class AppEventsManager {
             this.ref = new WeakReference<>(observer);
         }
 
-        @MainThread
+        @AnyThread
         void update(
                 final AppEventsManager manager,
                 final Object arg) {
@@ -114,7 +101,7 @@ public class AppEventsManager {
                 return;
             }
             if (clazz.isInstance(arg)) {
-                observer.onUpdate(clazz.cast(arg));
+                manager.handler.post(() -> observer.onUpdate(clazz.cast(arg)));
             }
         }
     }
