@@ -4,11 +4,12 @@ import android.content.Context;
 import android.events.meugeninua.androidevents.R;
 import android.events.meugeninua.androidevents.app.di.qualifiers.ActivityContext;
 import android.events.meugeninua.androidevents.app.di.scopes.PerFragment;
-import android.events.meugeninua.androidevents.ui.activities.main.fragment.binding.MessageBinding;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,15 +21,12 @@ import javax.inject.Provider;
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MessageHolder> {
 
     private final LayoutInflater inflater;
-    private final Provider<MessageBinding> bindingProvider;
     private List<String> messages;
 
     @Inject
     MessagesAdapter(
-            @ActivityContext final Context context,
-            final Provider<MessageBinding> bindingProvider) {
+            @ActivityContext final Context context) {
         this.inflater = LayoutInflater.from(context);
-        this.bindingProvider = bindingProvider;
         this.messages = new ArrayList<>();
     }
 
@@ -40,15 +38,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     @NonNull
     @Override
     public MessagesAdapter.MessageHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
-        final MessageBinding binding = bindingProvider.get();
-        binding.attachView(inflater.inflate(R.layout.item_message,
-                parent, false));
-        return new MessagesAdapter.MessageHolder(binding);
+        final View view = inflater.inflate(R.layout.item_message,
+                parent, false);
+        return new MessagesAdapter.MessageHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final MessagesAdapter.MessageHolder holder, final int position) {
-        holder.binding.message.setText(messages.get(position));
+        holder.message.setText(messages.get(position));
     }
 
     @Override
@@ -58,11 +55,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
     static class MessageHolder extends RecyclerView.ViewHolder {
 
-        final MessageBinding binding;
+        final TextView message;
 
-        MessageHolder(final MessageBinding binding) {
-            super(binding.getView());
-            this.binding = binding;
+        MessageHolder(final View view) {
+            super(view);
+            this.message = view.findViewById(R.id.message);
         }
 
     }

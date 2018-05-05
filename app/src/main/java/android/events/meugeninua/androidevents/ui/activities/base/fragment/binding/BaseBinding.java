@@ -5,10 +5,15 @@ import android.view.View;
 
 import java.lang.ref.WeakReference;
 
+import javax.inject.Inject;
+
 public class BaseBinding implements Binding {
 
     private WeakReference<View> rootViewRef;
     private SparseArrayCompat<WeakReference<View>> array;
+
+    @Inject
+    BaseBinding() {}
 
     public void attachView(final View view) {
         this.rootViewRef = new WeakReference<>(view);
