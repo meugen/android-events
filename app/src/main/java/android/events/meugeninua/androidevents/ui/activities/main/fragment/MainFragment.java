@@ -6,12 +6,13 @@ import android.events.meugeninua.androidevents.app.di.qualifiers.ActivityContext
 import android.events.meugeninua.androidevents.app.managers.events.AppEventsManager;
 import android.events.meugeninua.androidevents.app.managers.events.SimpleEvent;
 import android.events.meugeninua.androidevents.ui.activities.base.fragment.BaseFragment;
+import android.events.meugeninua.androidevents.ui.activities.base.fragment.binding.BaseBinding;
 import android.events.meugeninua.androidevents.ui.activities.main.fragment.adapters.MessagesAdapter;
-import android.events.meugeninua.androidevents.ui.activities.main.fragment.binding.MainBinding;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-public class MainFragment extends BaseFragment<MainBinding> {
+public class MainFragment extends BaseFragment<BaseBinding> {
 
     @Inject @ActivityContext Context context;
     @Inject AppEventsManager eventsManager;
@@ -45,9 +46,10 @@ public class MainFragment extends BaseFragment<MainBinding> {
             @Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        binding.recycler.addItemDecoration(new DividerItemDecoration(
+        final RecyclerView recycler = binding.get(R.id.recycler);
+        recycler.addItemDecoration(new DividerItemDecoration(
                 context, DividerItemDecoration.VERTICAL));
-        binding.recycler.setAdapter(adapter);
+        recycler.setAdapter(adapter);
 
         key = eventsManager.subscribeToEvent(SimpleEvent.class, this::onSimpleEvent);
     }
