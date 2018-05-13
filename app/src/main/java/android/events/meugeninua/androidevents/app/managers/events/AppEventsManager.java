@@ -56,7 +56,7 @@ public class AppEventsManager {
                 key = UUID.randomUUID();
             }
             final ObserverWrapper<T> impl = new ObserverWrapper<>(
-                    clazz, observer, key);
+                    clazz, observer);
             observers.put(key, impl);
         }
         return key;
@@ -78,28 +78,19 @@ public class AppEventsManager {
     private static class ObserverWrapper<T> {
 
         private final Class<T> clazz;
-        private final WeakReference<TypedObserver<T>> ref;
-
-        private final UUID key;
+        private final TypedObserver<T> observer;
 
         ObserverWrapper(
                 final Class<T> clazz,
-                final TypedObserver<T> observer,
-                final UUID key) {
+                final TypedObserver<T> observer) {
             this.clazz = clazz;
-            this.key = key;
-            this.ref = new WeakReference<>(observer);
+            this.observer = observer;
         }
 
         @AnyThread
         void update(
                 final AppEventsManager manager,
                 final Object arg) {
-            final TypedObserver<T> observer = ref.get();
-            if (observer == null) {
-                manager.unsubscribe(key);
-                return;
-            }
             if (clazz.isInstance(arg)) {
                 manager.handler.post(() -> observer.onUpdate(clazz.cast(arg)));
             }
